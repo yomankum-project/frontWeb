@@ -20,9 +20,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import signin from '../components/signIn/signIn.vue'
-import firstLogin from '../components/signIn/firstLogin.vue'
-import secondLogin from '../components/signIn/secondLogin.vue'
+import signin from '@/components/signIn/signIn.vue'
+import firstLogin from '@/components/signIn/firstLogin.vue'
+import secondLogin from '@/components/signIn/secondLogin.vue'
 
 const firstLoginCheck = ref(false)
 const firstEvent = () => {
