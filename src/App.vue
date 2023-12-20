@@ -2,6 +2,8 @@
 import { RouterView } from 'vue-router'
 import { ref } from 'vue'
 import navbar from './components/navBar.vue'
+import sidebar from './components/sideBar.vue'
+import privateNavbar from './components/privateNavBar.vue'
 import { useUserStore } from '@/stores/user.js'
 import { storeToRefs } from 'pinia';
 
@@ -24,18 +26,27 @@ const navBarHeight = ref('80px')
       <RouterView class="" />
     </div>
   </div>
+
   <div v-else-if="info.checkLogin == 'login'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px]">
-    <div>
-      sidebar section
-    </div>
-    <div>
-      <div>
-        navbar section
+    <div class="flex min-h-full">
+      <!-- first column -->
+      <div class="basis-1/6">
+        <!-- left sidebar -->
+        <sidebar class="h-full" />
       </div>
-      <div>
-        <RouterView class="" />
+      <!-- second column -->
+      <div class="basis-5/6 border-l-2 flex flex-col p-8">
+        <!-- navigation bar -->
+        <div class="basis-[12%] border-b-2">
+          <privateNavbar class="h-full" />
+        </div>
+        <!-- main content -->
+        <div class="basis-[88%] mt-8 ">
+          <RouterView class="h-full" />
+        </div>
       </div>
     </div>
+
   </div>
 </template>
 
