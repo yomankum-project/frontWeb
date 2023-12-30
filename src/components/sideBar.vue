@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <div class="basis-[12%] flex justify-center items-center">
+        <div class="basis-[100px] flex justify-center items-center">
             <div class="logo">
                 요만큼
             </div>
@@ -38,10 +38,9 @@ const clickSideMenu = (menu) => {
 .logo {
 
     /* Logo */
-    font-family: 'Pretendard Variable';
-    font-style: normal;
+    font-style: bold;
     font-weight: 900;
-    font-size: 30px;
+    font-size: 46px;
     line-height: 36px;
     /* identical to box height */
 
