@@ -15,7 +15,7 @@ const navBarHeight = ref('80px')
 </script>
 
 <template>
-  <div v-if="info.checkLogin == 'logout'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px]">
+  <div v-if="info.checkLogin == 'logout'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px] ">
     <!-- navigation bar -->
     <div class="flex justify-center ">
       <navbar id="navBar" class="navbar z-20" />
@@ -27,7 +27,7 @@ const navBarHeight = ref('80px')
     </div>
   </div>
 
-  <div v-else-if="info.checkLogin == 'login'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px]">
+  <div v-else-if="info.checkLogin == 'login'" class="w-[100vw] h-[100vh] min-w-[330px]">
     <div class="flex min-h-full">
       <!-- first column -->
       <div class="basis-1/6">
@@ -42,11 +42,10 @@ const navBarHeight = ref('80px')
         </div>
         <!-- main content -->
         <div class="basis-[88%] mt-8 ">
-          <RouterView class="h-full" />
+          <RouterView class="h-full w-full" />
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -66,6 +65,12 @@ const navBarHeight = ref('80px')
 </style>
 
 <style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+#app {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
 /* 핸드폰 */
 @media (min-width:0px) and (max-width:770px) {
   html {

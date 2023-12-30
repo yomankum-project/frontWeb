@@ -109,6 +109,8 @@ import Tailwind from 'primevue/passthrough/tailwind';
 import { usePassThrough } from "primevue/passthrough";
 import MyDesignSystem from './design-system.js'
 
+// import Lara from '@/presets/lara';
+
 const app = createApp(App)
 
 const pinia = createPinia()
@@ -120,6 +122,11 @@ app.use(PrimeVue, {
         mergeProps: false
     }
 });
+
+// app.use(PrimeVue, {
+//     ripple: true, unstyled: true, pt: Lara
+// });
+
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(DialogService);
