@@ -47,42 +47,42 @@ jobs:
       - name: Push to harbor manualy
         run: docker push ${{ env.HARBOR_URL }}/${{ env.HARBOR_PROJECT }}/${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
  
-  # delivery:
-  #   runs-on: [self-hosted, linux, x64, yomankum]
-  #   needs: docker
+  delivery:
+    runs-on: [self-hosted, linux, x64, yomankum]
+    needs: docker
 
-  #   steps:    
-  #     - name: Get verion
-  #       id: image
-  #       run: |
-  #         VERSION=$(echo ${{ github.sha }} | cut -c1-8)
-  #         echo VERSION=$VERSION
-  #         echo "::set-output name=version::$VERSION"
+    steps:    
+      # - name: Get verion
+      #   id: image
+      #   run: |
+      #     VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+      #     echo VERSION=$VERSION
+      #     echo "::set-output name=version::$VERSION"
 
-  #     - name: Checkout Argocd Repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: Larshavin/argocd-repository
-  #         token: ${{ secrets.TOKEN_FORWIZ }} 
-  #         path: webserver
+      - name: Checkout Argocd Repository
+        uses: actions/checkout@v3
+        with:
+          repository: yomankum-project/argocd 
+          token: ${{ secrets.LARSHAVIN_TOKEN }} 
+          path: yomankum
           
-  #     - name: change directory to argocd-repository/webserver
-  #       run: |
-  #         ls -al
+      - name: change directory to argocd-repository/webserver
+        run: |
+          ls -al
 
-  #     - name: Update Kubernetes resources by yq
-  #       uses: mikefarah/yq@master
-  #       with:
-  #         cmd: yq --inplace '.spec.template.spec.containers[image]="${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' webserver-deployment.yaml
+      - name: Update Kubernetes resources by yq
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq --inplace '.spec.template.spec.containers[image]="${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' front-app.yaml
           
-  #     - name: change directory to argocd-repository/webserver
-  #       run: |
-  #         cat webserver-deployment.yaml
+      - name: change directory to argocd-repository/webserver
+        run: |
+          cat front-app.yaml
           
-  #     - name: Commit files
-  #       run: |
-  #         cd argocd-repository
-  #         git config --global user.email "gkdlgkdl@naver.com"
-  #         git config --global user.name "Larshavin"
-  #         git commit -am "Update image tag as ${{ steps.image.outputs.version }}"
-  #         git push -u origin main
+      - name: Commit files
+        run: |
+          cd argocd-repository
+          git config --global user.email "gkdlgkdl@naver.com"
+          git config --global user.name "Larshavin"
+          git commit -am "Update image tag as ${{ steps.image.outputs.version }}"
+          git push -u origin main
