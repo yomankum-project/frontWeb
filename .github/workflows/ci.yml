@@ -82,8 +82,8 @@ jobs:
           cat yomankum/front-app.yaml
           
       - name: Commit files
+        working-directory: ./yomankum-argocd
         run: |
-          cd argocd-repository
           git config --global user.email "gkdlgkdl@naver.com"
           git config --global user.name "Larshavin"
           git commit -am "Update image tag as ${{ steps.image.outputs.version }}"
