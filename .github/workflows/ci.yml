@@ -74,7 +74,7 @@ jobs:
       - name: Update Kubernetes resources by yq
         uses: mikefarah/yq@master
         with:
-          cmd: pwd && yq --inplace '.spec.template.spec.containers[image]="${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' ./yomankum-argocd/yomankum/front-app.yaml
+          cmd: yq --inplace '.spec.template.spec.containers[0].image="${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' ./yomankum-argocd/yomankum/front-app.yaml
           
       - name: show changed file's detail
         working-directory: ./yomankum-argocd
