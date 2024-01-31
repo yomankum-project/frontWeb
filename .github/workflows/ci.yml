@@ -64,10 +64,11 @@ jobs:
         with:
           repository: yomankum-project/argocd 
           token: ${{ secrets.LARSHAVIN_TOKEN }} 
-          path: yomankum
+          path: yomankum-argocd
           
-      - name: change directory to argocd-repository/webserver
+      - name: change directory to yomankum-project/argocd 
         run: |
+          cd yomankum-argocd/yomankum
           ls -al
 
       - name: Update Kubernetes resources by yq
@@ -75,7 +76,7 @@ jobs:
         with:
           cmd: yq --inplace '.spec.template.spec.containers[image]="${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}"' front-app.yaml
           
-      - name: change directory to argocd-repository/webserver
+      - name: show changed file's detail
         run: |
           cat front-app.yaml
           
