@@ -184,7 +184,8 @@ const time = ref(null)
 const emailButton = ref('인증번호 발송')
 const timerOn = ref(false)
 const clock = ref(null)
-const emailCertification = () => {
+const emailCertification = async () => {
+    await sendEmail()
     if (timerOn.value) {
         timerOn.value = false;
         clearInterval(clock.value);
@@ -192,6 +193,18 @@ const emailCertification = () => {
         return;
     }
     timer();
+}
+
+const sendEmail = async () => {
+    try {
+        const response = await axios.post('/yomankum/api/v1/email/send', {
+            email: values.email,
+            mailType: "JOIN"
+        })
+        console.log(response)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 // 타이머 기능

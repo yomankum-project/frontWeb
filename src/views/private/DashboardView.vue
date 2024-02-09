@@ -11,7 +11,7 @@
                 <span class="relative">
                     <i class="pi pi-search absolute top-2/4 -mt-2 left-3 text-gray-400" />
                     <InputText v-model="searching" placeholder="태그 검색" class="pl-10 w-full border-none" />
-                    <i class="pi pi-times-circle absolute top-2/4 -mt-2 right-3 text-gray-400" />
+                    <i class="pi pi-times absolute top-2/4 -mt-2 right-3 text-gray-400" />
                 </span>
             </div>
             <div class="w-1/2 flex justify-end gap-8">

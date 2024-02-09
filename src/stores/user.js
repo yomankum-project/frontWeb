@@ -6,7 +6,7 @@ const { cookies } = useCookies();
 
 export const useUserStore = defineStore('user', () => {
     const info = ref({
-        checkLogin: 'login', checkCloud: 'notSelected'
+        checkLogin: 'logout',
     })
     const auth = ref({ accessToken: '', refreshToken: '' })
     const userdata = ref([])
