@@ -2,6 +2,8 @@
 import { RouterView } from 'vue-router'
 import { ref } from 'vue'
 import navbar from './components/navBar.vue'
+import sidebar from './components/sideBar.vue'
+import privateNavbar from './components/privateNavBar.vue'
 import { useUserStore } from '@/stores/user.js'
 import { storeToRefs } from 'pinia';
 
@@ -13,7 +15,7 @@ const navBarHeight = ref('80px')
 </script>
 
 <template>
-  <div v-if="info.checkLogin == 'logout'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px]">
+  <div v-if="info.checkLogin == 'logout'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px] ">
     <!-- navigation bar -->
     <div class="flex justify-center ">
       <navbar id="navBar" class="navbar z-20" />
@@ -24,16 +26,24 @@ const navBarHeight = ref('80px')
       <RouterView class="" />
     </div>
   </div>
-  <div v-else-if="info.checkLogin == 'login'" class="w-[100vw] h-[100vh] min-w-[330px] min-h-[667px]">
-    <div>
-      sidebar section
-    </div>
-    <div>
-      <div>
-        navbar section
+
+  <div v-else-if="info.checkLogin == 'login'" class="w-[100vw] h-[100vh] min-w-[330px] ">
+    <div class="flex h-full">
+      <!-- first column -->
+      <div class="w-1/6">
+        <!-- left sidebar -->
+        <sidebar class="h-full" />
       </div>
-      <div>
-        <RouterView class="" />
+      <!-- second column -->
+      <div class="w-5/6 h-full border-l-2 flex flex-col p-8">
+        <!-- navigation bar -->
+        <div class="h-[12%] border-b-2">
+          <privateNavbar class="h-full" />
+        </div>
+        <!-- main content -->
+        <div class="h-[88%] m pt-8 ">
+          <RouterView class="h-full w-full" />
+        </div>
       </div>
     </div>
   </div>
@@ -55,6 +65,12 @@ const navBarHeight = ref('80px')
 </style>
 
 <style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+#app {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
 /* 핸드폰 */
 @media (min-width:0px) and (max-width:770px) {
   html {
