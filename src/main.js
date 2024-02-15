@@ -116,7 +116,8 @@ import axios from 'axios'
 
 const app = createApp(App)
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;
+console.log(import.meta.env.VITE_ENDPOINT);
 app.provide('$axios', axios);
 
 const pinia = createPinia()

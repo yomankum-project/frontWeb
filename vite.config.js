@@ -17,7 +17,6 @@ export default ({ mode }) => {
       }
     },
     server: {
-      // https: true,
       proxy: {
         '/yomankum': {
           target: process.env.VITE_ENDPOINT,
