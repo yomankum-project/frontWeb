@@ -143,10 +143,11 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useForm } from 'vee-validate';
+import { useForm } from 'vee-validate'; 1
+
+const $axios = inject('$axios');
 
 const { values, errors, defineInputBinds } = useForm({
     validationSchema: {
@@ -197,7 +198,7 @@ const emailCertification = async () => {
 
 const sendEmail = async () => {
     try {
-        const response = await axios.post('/yomankum/api/v1/email/send', {
+        const response = await $axios.post('/yomankum/api/v1/email/send', {
             email: values.email,
             mailType: "JOIN"
         })

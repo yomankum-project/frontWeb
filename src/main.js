@@ -109,9 +109,15 @@ import Tailwind from 'primevue/passthrough/tailwind';
 import { usePassThrough } from "primevue/passthrough";
 import MyDesignSystem from './design-system.js'
 
+
+import axios from 'axios'
+
 // import Lara from '@/presets/lara';
 
 const app = createApp(App)
+
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+app.provide('$axios', axios);
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
