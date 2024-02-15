@@ -1,30 +1,33 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-// import https from "https";
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
-  server: {
-    // https: true,
-    proxy: {
-      '/yomankum': {
-        target: 'https://cube.3trolls.me',
-        changeOrigin: true,
-        secure: true,
-        // rewrite: (path) => path.replace(/^\/api/, ''),
-        // agent: new https.Agent(),
-        // ws: true
+export default ({ mode }) => {
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+
+  return defineConfig({
+    plugins: [
+      vue(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    server: {
+      // https: true,
+      proxy: {
+        '/yomankum': {
+          target: process.env.VITE_ENDPOINT,
+          changeOrigin: true,
+          secure: true,
+          // rewrite: (path) => path.replace(/^\/api/, ''),
+          // agent: new https.Agent(),
+          // ws: true
+        }
       }
     }
-  }
-})
+  })
+}
