@@ -15,8 +15,8 @@
                             <div class="text-base">이메일</div>
                         </div>
                         <div class="flex justify-center items-center">
-                            <input type="text" id="user_username" autocomplete="off" v-bind="user.email" required="required"
-                                placeholder="Example@email.com" aria-describedby="email-error"
+                            <input type="text" id="user_username" autocomplete="off" v-model="email" v-bind="emailAttrs"
+                                required="required" placeholder="Example@email.com" aria-describedby="email-error"
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                         </div>
                         <small class="text-red-600" id="email-error">{{ errors.email ||
@@ -28,8 +28,8 @@
                         </div>
                         <div class="flex justify-center items-center">
                             <form class="w-full">
-                                <input type="password" autocomplete="off" id="user_password" v-bind="user.password"
-                                    required="required" placeholder="6~20자의 문자, 숫자, 특수문자 조합"
+                                <input type="password" autocomplete="off" id="user_password" v-model="password"
+                                    v-bind="passwordAttrs" required="required" placeholder="6~20자의 문자, 숫자, 특수문자 조합"
                                     aria-describedby="password-error"
                                     class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                             </form>
@@ -84,19 +84,28 @@
 </template>
 
 <script setup>
-import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useForm } from 'vee-validate';
+
+import { useUserStore } from '@/stores/user.js'
+import { storeToRefs } from 'pinia';
+
+const $axios = inject('$axios');
+
+const userStore = useUserStore();
+const { info } = storeToRefs(userStore);
+
+
 
 const emit = defineEmits(['firstLoginCheck'])
 
 onMounted(() => {
     // 로컬 저장소에 저장된 이메일이 있다면 values에 저장
     const autoLogin = localStorage.getItem('autoLogin');
-    if (autoLogin) {
-        values.email = autoLogin;
-        checked.value = ['true']
+    if (autoLogin != '' && autoLogin != null) {
+        email.value = autoLogin;
+        checked.value = true
     } else {
         console.log("no email remembered");
     }
@@ -106,7 +115,7 @@ onMounted(() => {
 const checked = ref(false)
 
 // 이메일, 비밀번호 양식 검사 
-const { values, errors, defineInputBinds } = useForm({
+const { values, errors, defineField } = useForm({
     validationSchema: {
         email: val => (isEmail(val) ? true : '아이디 형식이 아닙니다'),
         password: val => (isPassword(val) ? true : '비밀번호 형식이 맞지 않습니다'),
@@ -121,31 +130,43 @@ function isPassword(value) {
     return /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$/.test(value);
 }
 
-const user = ref({
-    email: defineInputBinds('email'),
-    password: defineInputBinds('password'),
-})
+
+const [email, emailAttrs] = defineField('email');
+const [password, passwordAttrs] = defineField('password');
 
 // 로그인 버튼 클릭시 작동
 const signIn = async () => {
     try {
-        const userInfo = values
-        console.log(userInfo)
-        // const response = await axios.post('http://localhost:8000/signUp', user.value)
-        // console.log(response)
+        const userInfo = {
+            email: '',
+            password: ''
+        }
 
-        // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
-        // ...
+        userInfo.email = values.email
+        userInfo.password = values.password
+
+        console.log(userInfo)
+
+        const response = await $axios.post('/yomankum/api/v1/login', userInfo)
+        console.log(response.data)
 
         // 로그인 유지 체크 박스가 체크되어 있다면 로컬 저장소에 이메일 저장
-        if (checked.value == 'true') {
+        console.log(checked.value)
+        if (checked.value == true) {
             localStorage.setItem("autoLogin", userInfo.email);
         } else {
             localStorage.removeItem("autoLogin");
         }
 
+        // 만약 첫 번째 로그인이라면 firstLoginCheck 이벤트 발생
+
+        // 첫 번째이 아니고, 로그인이 성공했다면, 메인 페이지로 이동
+        // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
+        // info.value.checkLogin = 'login'
+
         // 로그인이 성공했다면, 메인 페이지로 이동
         // 첫 로그인이라면 firstLoginCheck 이벤트 발생
+
         emit('firstLoginCheck')
 
     } catch (error) {
