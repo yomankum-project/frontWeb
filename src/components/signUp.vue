@@ -17,7 +17,7 @@
                             <div class="text-base">이메일 인증</div>
                         </div>
                         <div class="flex justify-center items-center inputStyle">
-                            <input type="text" id="user_email" autocomplete="off" v-bind="signUpForm.email"
+                            <input type="text" id="user_email" autocomplete="off" v-model="email" v-bind="emailAttrs"
                                 placeholder="Example@email.com"
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md h-full w-full px-4" />
                         </div>
@@ -32,11 +32,16 @@
                             <div v-if="time != null" class="text-red-600"> 남은 시간 : {{ time }}</div>
                         </div>
                         <div class="flex justify-center items-center inputStyle gap-2">
-                            <input type="text" id="user_email_cert" autocomplete="off" v-bind="signUpForm.email_cert"
-                                placeholder="인증번호 입력"
+                            <input type="text" id="user_email_cert" autocomplete="nope" v-model="email_cert"
+                                v-bind="emailCertAttrs" placeholder="인증번호 입력"
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md h-full w-[50%] px-4" />
-                            <Button class="h-full w-[50%] justify-center bg-[#1e4ae9]" @click="emailCertification"> {{
-                                emailButton }}
+                            <Button v-if="emailButton != '인증 완료'" class="h-full w-[50%] justify-center bg-[#1e4ae9]"
+                                @click="emailCertification"> {{
+                                    emailButton }}
+                            </Button>
+                            <Button v-else disabled class="h-full w-[50%] justify-center bg-[#1e4ae9]"
+                                @click="emailCertification"> {{
+                                    emailButton }}
                             </Button>
                         </div>
                         <small class="text-red-600 " id="email-cert-error">{{ errors.email_cert ||
@@ -51,8 +56,8 @@
                         </div>
                         <div class="flex justify-center items-center inputStyle">
                             <form class="h-full w-full">
-                                <input type="password" autocomplete="off" id="user_password" v-bind="signUpForm.password"
-                                    placeholder="6~20자의 문자, 숫자, 특수문자 조합"
+                                <input type="password" autocomplete="off" id="user_password" v-model="password"
+                                    v-bind="passwordAttrs" placeholder="6~20자의 문자, 숫자, 특수문자 조합"
                                     class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md h-full w-full  px-4" />
                             </form>
                         </div>
@@ -68,7 +73,8 @@
                         <div class="flex justify-center items-center inputStyle">
                             <form class="h-full w-full">
                                 <input type="password" autocomplete="off" id="user_password_repeat"
-                                    v-bind="signUpForm.password_repeat" placeholder="6~20자의 문자, 숫자, 특수문자 조합"
+                                    v-model="password_repeat" v-bind="passwordRepeatAttrs"
+                                    placeholder="6~20자의 문자, 숫자, 특수문자 조합"
                                     class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md  h-full w-full px-4" />
                             </form>
                         </div>
@@ -123,8 +129,9 @@
 
                 <!-- 회원가입 버튼 -->
                 <div class="flex justify-center items-center mb-6 ">
-                    <button
-                        class="ripple bg-[#6F8EFF] text-white rounded-md w-[440px] h-[50px] px-2 hover:bg-slate-200">가입하기</button>
+                    <Button
+                        class="justify-center bg-[#1e4ae9] text-white rounded-md w-[440px] h-[50px] px-2 hover:bg-[#6F8EFF]"
+                        @click="signUpRequest()">가입하기</Button>
                 </div>
 
                 <!-- 회원가입 안내 -->
@@ -145,14 +152,14 @@
 <script setup>
 import { ref, inject } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useForm } from 'vee-validate'; 1
+import { useForm } from 'vee-validate';
 
 const $axios = inject('$axios');
 
-const { values, errors, defineInputBinds } = useForm({
+const { values, errors, defineField } = useForm({
     validationSchema: {
-        email: val => (isEmail(val) ? true : '아이디 형식이 아닙니다'),
-        email_cert: val => (isEmailCertificated(val) ? true : '이메일 인증이 완료되지 않았습니다'),
+        email: val => (isEmail(val) ? true : '이메일 형식이 아닙니다'),
+        // email_cert: val => (isEmailCertificated(val) ? true : '이메일 인증이 완료되지 않았습니다'),
         password: val => (isPassword(val) ? true : '비밀번호 형식이 맞지 않습니다'),
         password_repeat: val => (isPasswordRepeated(val) ? true : '비밀번호가 일치하지 않습니다'),
     },
@@ -162,9 +169,9 @@ function isEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-function isEmailCertificated(value) {
-    return values.email === value;
-}
+// function isEmailCertificated(value) {
+//     return values.email === value;
+// }
 
 function isPassword(value) {
     return /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$/.test(value);
@@ -174,23 +181,72 @@ function isPasswordRepeated(value) {
     return values.password === value;
 }
 
-const signUpForm = ref({
-    email: defineInputBinds('email'),
-    email_cert: defineInputBinds('email_cert'),
-    password: defineInputBinds('password'),
-    password_repeat: defineInputBinds('password_repeat'),
-})
+// const signUpForm = ref({
+//     email: defineInputBinds('email'),
+//     email_cert: defineInputBinds('email_cert'),
+//     password: defineInputBinds('password'),
+//     password_repeat: defineInputBinds('password_repeat'),
+// })
+
+const [email, emailAttrs] = defineField('email');
+const [email_cert, emailCertAttrs] = defineField('email_cert');
+const [password, passwordAttrs] = defineField('password');
+const [password_repeat, passwordRepeatAttrs] = defineField('password_repeat');
 
 const time = ref(null)
 const emailButton = ref('인증번호 발송')
 const timerOn = ref(false)
 const clock = ref(null)
 const emailCertification = async () => {
-    await sendEmail()
-    if (timerOn.value) {
-        timerOn.value = false;
+    console.log(emailButton.value)
+    if (emailButton.value == '인증번호 확인') {
+        if (values.email_cert == undefined || values.email_cert == '') {
+            alert('인증번호를 입력해주세요')
+            return;
+        }
+        var err = await checkEmailCert(values.email_cert)
+        if (err != null) {
+            alert('인증번호가 일치하지 않습니다')
+            return;
+        }
+        alert('인증이 완료되었습니다')
         clearInterval(clock.value);
-        emailButton.value = '인증번호 발송';
+        time.value = null;
+        timerOn.value = false;
+        emailButton.value = '인증 완료'
+    } else if (emailButton.value == '인증번호 발송') {
+        await sendEmailCert()
+    } else {
+        alert('이미 인증이 완료되었습니다')
+    }
+}
+
+const checkEmailCert = async (code) => {
+    try {
+        const response = await $axios.post('/yomankum/api/v1/email/code/check', {
+            email: values.email,
+            code: code
+        })
+        console.log(response)
+        return null;
+    } catch (error) {
+        console.log(error)
+        return true;
+    }
+}
+
+const sendEmailCert = async () => {
+    if (values.email === undefined || values.email === '') {
+        alert('이메일을 입력해주세요')
+        return;
+    }
+    if (!isEmail(values.email)) {
+        alert('이메일 형식이 맞지 않습니다')
+        return;
+    }
+    var err = await sendEmail()
+    if (err) {
+        alert('이메일 발송에 실패하였습니다')
         return;
     }
     timer();
@@ -198,21 +254,23 @@ const emailCertification = async () => {
 
 const sendEmail = async () => {
     try {
-        const response = await $axios.post('/yomankum/api/v1/email/send', {
+        const response = await $axios.post('/yomankum/api/v1/email', {
             email: values.email,
             mailType: "JOIN"
         })
         console.log(response)
+        return false;
     } catch (error) {
         console.log(error)
+        return true;
     }
 }
 
 // 타이머 기능
 const timer = () => {
-    let min = 3;
+    let min = 5;
     let sec = 0;
-    time.value = '03:00'
+    time.value = '05:00'
     timerOn.value = true;
     emailButton.value = '인증번호 확인';
     clock.value = setInterval(() => {
@@ -227,6 +285,11 @@ const timer = () => {
             sec--;
         }
         time.value = `${min < 10 ? `0${min}` : min}:${sec < 10 ? `0${sec}` : sec}`;
+        if (min === 0 && sec === 0) {
+            clearInterval(clock.value);
+            timerOn.value = false;
+            emailButton.value = '인증번호 발송';
+        }
     }, 1000);
 }
 
@@ -272,6 +335,74 @@ const makeAllTrue = () => {
         for (const key in termsOfUse.value) {
             termsOfUse.value[key].checked = false
         }
+    }
+}
+
+const signUpRequest = async () => {
+    if (!checked.value) {
+        alert('약관에 동의 해주세요')
+        return;
+    }
+    for (const key in termsOfUse.value) {
+        if (!termsOfUse.value[key].checked) {
+            alert('약관에 모두 동의 해주세요')
+            return;
+        }
+    }
+
+    console.log(values.value)
+
+    if (values.email == undefined || errors.value.email != undefined || values.email_cert == undefined || errors.value.email_cert != undefined || values.password == undefined || errors.value.password != undefined || values.password_repeat == undefined || errors.value.password_repeat != undefined) {
+
+        console.log(values.email)
+        console.log(errors.value.email)
+
+        if (values.email === undefined) {
+            alert('이메일을 입력해주세요')
+            return;
+        }
+        if (errors.value.email != undefined) {
+            alert(errors.value.email)
+            return;
+        }
+        if (emailButton.value != '인증 완료') {
+            alert('이메일 인증을 완료해주세요')
+            return;
+        }
+        if (values.password == undefined) {
+            alert('비밀번호를 입력해주세요')
+            return;
+        }
+        if (errors.value.email != undefined) {
+            alert('비밀번호 형식이 맞지 않습니다')
+            return;
+        }
+        if (values.password_repeat == undefined) {
+            alert('비밀번호 확인을 입력해주세요')
+            return;
+        }
+        if (errors.value.password_repeat != undefined) {
+            alert('비밀번호가 일치하지 않습니다')
+            return;
+        }
+        return;
+    }
+
+    await signUp()
+}
+
+const signUp = async () => {
+    try {
+        console.log(values.email, values.password)
+        const response = await $axios.post('/yomankum/api/v1/sign-up', {
+            email: values.email,
+            password: values.password
+        })
+        console.log(response)
+        alert('회원가입이 완료되었습니다')
+    } catch (error) {
+        console.log(error)
+        alert('회원가입에 실패하였습니다')
     }
 }
 
