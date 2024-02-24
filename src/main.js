@@ -109,7 +109,6 @@ import Tailwind from 'primevue/passthrough/tailwind';
 import { usePassThrough } from "primevue/passthrough";
 import MyDesignSystem from './design-system.js'
 
-
 import axios from 'axios'
 
 // import Lara from '@/presets/lara';
@@ -117,7 +116,6 @@ import axios from 'axios'
 const app = createApp(App)
 
 axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;
-console.log(import.meta.env.VITE_ENDPOINT);
 app.provide('$axios', axios);
 
 const pinia = createPinia()
