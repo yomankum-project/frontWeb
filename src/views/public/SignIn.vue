@@ -19,20 +19,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import signin from '@/components/signIn/signIn.vue'
 import firstLogin from '@/components/signIn/firstLogin.vue'
 import secondLogin from '@/components/signIn/secondLogin.vue'
 
+onMounted(() => {
+})
+
 const firstLoginCheck = ref(false)
+const secondLoginCheck = ref(false)
+
 const firstEvent = () => {
-    console.log('hi1')
     firstLoginCheck.value = true
+    alert('첫 로그인 입니다. 추가 정보를 입력 해주세요')
 }
 
-const secondLoginCheck = ref(false)
 const secondEvent = () => {
     console.log('hi2')
+    alert('hi2')
     secondLoginCheck.value = true
 }
 

@@ -27,7 +27,7 @@
                             <div class="text-base">비밀번호</div>
                         </div>
                         <div class="flex justify-center items-center">
-                            <form class="w-full">
+                            <form class="w-full" @submit.prevent="clickSignIn()">
                                 <input type="password" autocomplete="off" id="user_password" v-model="password"
                                     v-bind="passwordAttrs" required="required" placeholder="6~20자의 문자, 숫자, 특수문자 조합"
                                     aria-describedby="password-error"
@@ -65,8 +65,8 @@
 
                 <!-- 로그인 버튼 -->
                 <div class="flex justify-center items-center mb-6">
-                    <button @click="signIn"
-                        class="ripple bg-[#1E4AE9] text-white rounded-md w-full h-[50px] px-2 hover:bg-slate-200">로그인</button>
+                    <Button @click="clickSignIn()"
+                        class="ripple bg-[#1E4AE9] text-white rounded-md w-full h-[50px] px-2 hover:bg-slate-200 justify-center">로그인</Button>
                 </div>
 
                 <!-- 회원가입 안내 -->
@@ -91,17 +91,21 @@ import { useForm } from 'vee-validate';
 import { useUserStore } from '@/stores/user.js'
 import { storeToRefs } from 'pinia';
 
+// import axios from 'axios';
+// axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;
+
 const $axios = inject('$axios');
 
 const userStore = useUserStore();
 const { info } = storeToRefs(userStore);
 
-
-
 const emit = defineEmits(['firstLoginCheck'])
 
 onMounted(() => {
     // 로컬 저장소에 저장된 이메일이 있다면 values에 저장
+
+    // console.log(import.meta.env.VITE_ENDPOINT)
+
     const autoLogin = localStorage.getItem('autoLogin');
     if (autoLogin != '' && autoLogin != null) {
         email.value = autoLogin;
@@ -130,12 +134,31 @@ function isPassword(value) {
     return /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$/.test(value);
 }
 
-
 const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
+const clickSignIn = async () => {
+
+    // console.log(values.email, values.password, errors.value.email, errors.value.password, info.value.checkLogin)
+
+    if (values.email == '' || values.password == '' || values.email == undefined || values.password == undefined) {
+        alert('아이디와 비밀번호를 입력해주세요')
+        return
+    }
+    if ((errors.value.email != '' && errors.value.email != undefined) || (errors.value.password != '' && errors.value.password != undefined)) {
+        alert('아이디와 비밀번호를 확인해주세요')
+        return
+    }
+    if (info.value.checkLogin == 'login') {
+        alert('이미 로그인 되어있습니다')
+        return
+    }
+    await signIn()
+}
+
+
 // 로그인 버튼 클릭시 작동
-const signIn = async () => {
+const signIn = (async () => {
     try {
         const userInfo = {
             email: '',
@@ -145,33 +168,32 @@ const signIn = async () => {
         userInfo.email = values.email
         userInfo.password = values.password
 
-        console.log(userInfo)
-
         const response = await $axios.post('/yomankum/api/v1/login', userInfo)
-        console.log(response.data)
+        // console.log(response.data.nickname)
 
         // 로그인 유지 체크 박스가 체크되어 있다면 로컬 저장소에 이메일 저장
-        console.log(checked.value)
         if (checked.value == true) {
+            console.log("save cookie")
             localStorage.setItem("autoLogin", userInfo.email);
         } else {
+            console.log("remove cookie")
             localStorage.removeItem("autoLogin");
         }
 
-        // 만약 첫 번째 로그인이라면 firstLoginCheck 이벤트 발생
-
-        // 첫 번째이 아니고, 로그인이 성공했다면, 메인 페이지로 이동
-        // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
-        // info.value.checkLogin = 'login'
-
-        // 로그인이 성공했다면, 메인 페이지로 이동
-        // 첫 로그인이라면 firstLoginCheck 이벤트 발생
-
-        emit('firstLoginCheck')
-
+        if (response.data.nickname == null || response.data.nickname == '') {
+            emit('firstLoginCheck')
+            return
+        } else {
+            console.log('go to main page')
+            // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
+            info.value.checkLogin = 'login'
+            return
+        }
     } catch (error) {
+        alert('로그인 실패')
         console.log(error)
+        return
     }
-}
+})
 
 </script>

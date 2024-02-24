@@ -8,6 +8,7 @@ import Profile from '@/views/private/ProfileView.vue'
 import Account from '@/views/private/AccountView.vue'
 import Statistic from '@/views/private/StatisticView.vue'
 import Settings from '@/views/private/SettingView.vue'
+import SignOut from '@/views/private/SignOut.vue'
 
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/stores/user'
@@ -67,6 +68,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: Settings
+    },
+    {
+      path: '/signout',
+      name: 'signout',
+      component: SignOut
     },
     // {
     //   path: '/users',
