@@ -20,7 +20,7 @@
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                         </div>
                         <small class="text-red-600" id="email-error">{{ errors.email ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
                     <div class="flex flex-col mb-6 w-full h-[76px]">
                         <div class="flex justify-start items-center">
@@ -35,7 +35,7 @@
                             </form>
                         </div>
                         <small class="text-red-600" id="password-error">{{ errors.password ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
                     <div class="flex justify-between ">
                         <div class="flex">
@@ -91,13 +91,16 @@ import { useForm } from 'vee-validate';
 import { useUserStore } from '@/stores/user.js'
 import { storeToRefs } from 'pinia';
 
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
+
 // import axios from 'axios';
 // axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;
 
 const $axios = inject('$axios');
-
 const userStore = useUserStore();
-const { info } = storeToRefs(userStore);
+const { info, auth } = storeToRefs(userStore);
+
 
 const emit = defineEmits(['firstLoginCheck'])
 
@@ -171,12 +174,17 @@ const signIn = (async () => {
         const response = await $axios.post('/yomankum/api/v1/login', userInfo)
         // console.log(response.data.nickname)
 
+        // save accessToken to pinia store
+        auth.value.accessToken = response.data.accessToken
+        // save userInfo to cookie
+        cookies.set('refreshToken', response.data.refreshToken, "1d")
+
         // 로그인 유지 체크 박스가 체크되어 있다면 로컬 저장소에 이메일 저장
         if (checked.value == true) {
-            console.log("save cookie")
+            // console.log("save cookie")
             localStorage.setItem("autoLogin", userInfo.email);
         } else {
-            console.log("remove cookie")
+            // console.log("remove cookie")
             localStorage.removeItem("autoLogin");
         }
 
