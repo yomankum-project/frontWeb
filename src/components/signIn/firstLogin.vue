@@ -16,13 +16,13 @@
                             <div class="text-base">닉네임 입력</div>
                         </div>
                         <div class="flex justify-center items-center">
-                            <input type="text" id="user_username" autocomplete="off" v-bind="user.nickname"
-                                required="required" placeholder="아이디 입력 (1~15자의 한글/영어 대소문자 사용)"
+                            <input type="text" id="user_username" autocomplete="off" v-model="nickname"
+                                v-bind="nicknameAttrs" required="required" placeholder="아이디 입력 (1~15자의 한글/영어 대소문자 사용)"
                                 aria-describedby="nickname-error"
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                         </div>
                         <small class="text-red-600" id="nickname-error">{{ errors.nickname ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
 
                     <!-- 성별 생년월일 입력 -->
@@ -41,11 +41,14 @@
                             <div class="flex justify-start items-center mb-3">
                                 <div class="text-base"> 생년월일 </div>
                             </div>
-                            <div class="flex justify-center items-center">
-                                <input type="text" id="user_username" autocomplete="off" v-model="user.birth"
-                                    required="required" placeholder="1999.09.09"
+                            <div class="flex justify-between items-center relative">
+                                <input type="text" id="user_birth" autocomplete="off" v-model="birth"
+                                    v-bind="birthAttrs" required="required" placeholder="yyyy-mm-dd"
+                                    aria-describedby="birth-error"
                                     class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                             </div>
+                            <small class="text-red-600" id="birth-error">{{ errors.birth ||
+                                '&nbsp;' }}</small>
                         </div>
 
                     </div>
@@ -68,12 +71,16 @@
 
 import { ref } from 'vue'
 import { useForm } from 'vee-validate';
+import { useUserStore } from '@/stores/user.js'
+
+const userStore = useUserStore();
 
 const emit = defineEmits(['secondLoginCheck'])
 
-const { values, errors, defineInputBinds } = useForm({
+const { values, errors, defineField } = useForm({
     validationSchema: {
         nickname: val => (isNickname(val) ? true : '닉네임 형식이 아닙니다'),
+        birth: val => (isDate(val) ? true : '유효한 날짜 형식이 아닙니다'),
     },
 });
 
@@ -82,20 +89,88 @@ function isNickname(value) {
     return /^[가-힣a-zA-Z]{1,15}$/.test(value);
 }
 
+// yyyy-mm-dd 형태의 날짜
+function isDate(value) {
+
+    if (value != '' && value != undefined) {
+        const today = new Date()
+        var check1 = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)
+        var check2 = value.split('-')[0] > 1900 && value.split('-')[0] < today.getFullYear()
+        var check3 = value.split('-')[1] > 0 && value.split('-')[1] < 13
+        var check4 = value.split('-')[2] > 0 && value.split('-')[2] < 32
+
+        return check1 && check2 && check3 && check4;
+    }
+
+    return false
+}
+
 const user = ref({
-    'nickname': defineInputBinds('nickname'),
+    'nickname': '',
     'gender': '',
-    'birth': '',
+    'birthDate': '',
 })
+
+// const showCalender = ref(true)
+
+const [nickname, nicknameAttrs] = defineField('nickname')
+const [birth, birthAttrs] = defineField('birth')
 
 const genderOption = ref([
     { 'gender': '남자' },
     { 'gender': '여자' },
 ])
 
-const save = () => {
-    console.log(user.value)
-    emit('secondLoginCheck')
+const save = async () => {
+
+    // console.log(errors.value.nickname, values.nickname, user.value.birth, user.value.gender)
+
+    if (errors.value.nickname != undefined || values.nickname == '' || values.nickname == undefined) {
+        alert('닉네임을 확인해주세요')
+        return
+    }
+
+    if (user.value.gender == '') {
+        alert('성별을 확인해주세요')
+        return
+    }
+
+    if (errors.value.birth != undefined || values.birth == '' || values.birth == undefined) {
+        alert('생년월일을 확인해주세요')
+        return
+    }
+
+    // saveRequest()
+    await saveRequest()
+
+    // emit('secondLoginCheck')
+}
+
+const saveRequest = async () => {
+
+    var gender
+
+    if (user.value.gender == '남자') {
+        gender = 'MALE'
+    } else {
+        gender = 'FEMALE'
+    }
+
+    const body = {
+        "nickname": values.nickname,
+        "gender": gender,
+        "birthDate": values.birth,
+    }
+
+    try {
+        const response = await userStore.axiosAuthInterceptors().post('/yomankum/api/v1/login/first', body)
+        console.log(response)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 </script>
+
+
+<style scoped></style>
