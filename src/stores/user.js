@@ -1,40 +1,72 @@
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { useCookies } from "vue3-cookies";
+import { useRouter } from 'vue-router';
 const { cookies } = useCookies();
 
 export const useUserStore = defineStore('user', () => {
+
+    const $axios = inject('$axios');
+    const router = useRouter();
+
     const info = ref({
         checkLogin: 'logout',
     })
-    const auth = ref({ accessToken: '', refreshToken: '' })
+
+    const auth = ref({ accessToken: '' })
+
     const userdata = ref([])
-    function tokenErrorHandler(error, func, retry, theArgs) {
-        if (error.response.data.detail === "Token has expired") {
-            axios.post('/api/user/refresh_token', {
-                "access_token": cookies.get('accessToken'),
-                "refresh_token": cookies.get('accessRefresh'),
-                "token_type": "bearer"
-            })
-                .then((response) => {
-                    console.log(response);
-                    cookies.set('accessToken', response.data.access_token);
-                    cookies.set('accessRefresh', response.data.refresh_token);
-                    retry += 1
-                    func(retry, theArgs);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        } else {
-            alert(error);
-        }
+
+    function axiosAuthInterceptors() {
+        const api = $axios.create();
+
+        api.interceptors.request.use(
+            config => {
+                config.headers.Authorization = `Bearer ${auth.value.accessToken}`
+                return config
+            },
+            error => {
+                return Promise.reject(error)
+            }
+        )
+
+        api.interceptors.response.use(
+            response => {
+                return response
+            },
+            error => {
+                if (error.response.status === 401) {
+                    api.post('/api/user/refresh_token', {
+                        "accessToken": auth.value.accessToken,
+                        "refreshToken": cookies.get('refreshToken'),
+                    })
+                        .then((response) => {
+                            // save accessToken to pinia store
+                            auth.value.accessToken = response.data.accessToken
+                            // save userInfo to cookie
+                            cookies.set('refreshToken', response.data.refreshToken, "1d")
+
+                            // retry the request
+                            return api.request(error.config)
+                        })
+                        .catch(() => {
+                            router.push({ name: 'Login' });
+                        });
+                }
+                return Promise.reject(error)
+            }
+        )
+
+        return api
     }
-    return { info, auth, userdata, tokenErrorHandler }
-}, {
-    persist: {
-        key: 'user-key',
-        storage: sessionStorage, //  탭이 닫힐 때 사라짐, 로그아웃시 스토리지에서 삭제해줘야 함
+
+    return { info, auth, userdata, axiosAuthInterceptors }
+},
+    {
+        persist: {
+            key: 'user-key',
+            storage: sessionStorage, //  탭이 닫힐 때 사라짐, 로그아웃시 스토리지에서 삭제해줘야 함
+        },
     },
-},)
+
+)
