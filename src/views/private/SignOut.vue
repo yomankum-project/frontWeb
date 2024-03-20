@@ -15,13 +15,9 @@ const { info } = storeToRefs(userStore);
 axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;
 
 onMounted(() => {
-    // axios.post('/signout')
-    //     .then(() => {
+    // 세션 스토리지 초기화
+    sessionStorage.clear();
 
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     })
     info.value.checkLogin = 'logout';
     useRouter().push('/');
 })

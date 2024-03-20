@@ -32,8 +32,7 @@
                                 <div class="text-base"> 성별 </div>
                             </div>
                             <div class="flex justify-start items-center">
-                                <Dropdown v-model="user.gender" :options="genderOption" optionLabel="gender"
-                                    placeholder="성별"
+                                <Dropdown v-model="gender" :options="genderOption" optionLabel="gender" placeholder="성별"
                                     class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4 hover:border-black" />
                             </div>
                         </div>
@@ -72,8 +71,10 @@
 import { ref } from 'vue'
 import { useForm } from 'vee-validate';
 import { useUserStore } from '@/stores/user.js'
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
+const { auth } = storeToRefs(userStore);
 
 const emit = defineEmits(['secondLoginCheck'])
 
@@ -105,11 +106,13 @@ function isDate(value) {
     return false
 }
 
-const user = ref({
-    'nickname': '',
-    'gender': '',
-    'birthDate': '',
-})
+const gender = ref('')
+
+// const user = ref({
+//     'nickname': '',
+//     'gender': '',
+//     'birthDate': '',
+// })
 
 // const showCalender = ref(true)
 
@@ -123,14 +126,14 @@ const genderOption = ref([
 
 const save = async () => {
 
-    // console.log(errors.value.nickname, values.nickname, user.value.birth, user.value.gender)
+    // console.log(values.nickname, user.value.gender)
 
     if (errors.value.nickname != undefined || values.nickname == '' || values.nickname == undefined) {
         alert('닉네임을 확인해주세요')
         return
     }
 
-    if (user.value.gender == '') {
+    if (gender.value.gender == '' || gender.value.gender == undefined) {
         alert('성별을 확인해주세요')
         return
     }
@@ -140,30 +143,28 @@ const save = async () => {
         return
     }
 
-    // saveRequest()
     await saveRequest()
 
-    // emit('secondLoginCheck')
+    emit('secondLoginCheck')
 }
 
 const saveRequest = async () => {
 
-    var gender
-
-    if (user.value.gender == '남자') {
-        gender = 'MALE'
-    } else {
-        gender = 'FEMALE'
-    }
-
-    const body = {
+    const body = ref({
         "nickname": values.nickname,
-        "gender": gender,
+        "gender": '',
         "birthDate": values.birth,
+        "id": auth.value.id,
+    })
+
+    if (gender.value.gender == '남자') {
+        body.value.gender = 'MALE'
+    } else if (gender.value.gender == '여자') {
+        body.value.gender = 'FEMALE'
     }
 
     try {
-        const response = await userStore.axiosAuthInterceptors().post('/yomankum/api/v1/login/first', body)
+        const response = await userStore.axiosAuthInterceptors().post('/yomankum/api/v1/login/first', body.value)
         console.log(response)
     } catch (error) {
         console.log(error)
