@@ -136,7 +136,7 @@ app.use(ConfirmationService);
 app.use(ToastService);
 app.use(DialogService);
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 
 app.directive('tooltip', Tooltip);

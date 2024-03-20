@@ -85,7 +85,7 @@
 
 <script setup>
 import { ref, onMounted, inject } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useForm } from 'vee-validate';
 
 import { useUserStore } from '@/stores/user.js'
@@ -101,14 +101,12 @@ const $axios = inject('$axios');
 const userStore = useUserStore();
 const { info, auth } = storeToRefs(userStore);
 
+const router = useRouter();
 
 const emit = defineEmits(['firstLoginCheck'])
 
 onMounted(() => {
     // 로컬 저장소에 저장된 이메일이 있다면 values에 저장
-
-    // console.log(import.meta.env.VITE_ENDPOINT)
-
     const autoLogin = localStorage.getItem('autoLogin');
     if (autoLogin != '' && autoLogin != null) {
         email.value = autoLogin;
@@ -176,6 +174,7 @@ const signIn = (async () => {
 
         // save accessToken to pinia store
         auth.value.accessToken = response.data.accessToken
+        auth.value.id = response.data.id
         // save userInfo to cookie
         cookies.set('refreshToken', response.data.refreshToken, "1d")
 
@@ -195,6 +194,7 @@ const signIn = (async () => {
             console.log('go to main page')
             // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
             info.value.checkLogin = 'login'
+            router.push({ name: 'dashboard' });
             return
         }
     } catch (error) {

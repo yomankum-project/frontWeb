@@ -71,8 +71,10 @@
 import { ref } from 'vue'
 import { useForm } from 'vee-validate';
 import { useUserStore } from '@/stores/user.js'
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
+const { auth } = storeToRefs(userStore);
 
 const emit = defineEmits(['secondLoginCheck'])
 
@@ -106,11 +108,11 @@ function isDate(value) {
 
 const gender = ref('')
 
-const user = ref({
-    'nickname': '',
-    'gender': '',
-    'birthDate': '',
-})
+// const user = ref({
+//     'nickname': '',
+//     'gender': '',
+//     'birthDate': '',
+// })
 
 // const showCalender = ref(true)
 
@@ -141,10 +143,9 @@ const save = async () => {
         return
     }
 
-    // saveRequest()
     await saveRequest()
 
-    // emit('secondLoginCheck')
+    emit('secondLoginCheck')
 }
 
 const saveRequest = async () => {
@@ -153,19 +154,14 @@ const saveRequest = async () => {
         "nickname": values.nickname,
         "gender": '',
         "birthDate": values.birth,
+        "id": auth.value.id,
     })
 
-    // console.log(gender.value.gender)
-
     if (gender.value.gender == '남자') {
-        // console.log('남자')
         body.value.gender = 'MALE'
     } else if (gender.value.gender == '여자') {
-        // console.log('여자')
         body.value.gender = 'FEMALE'
     }
-
-    // console.log(body)
 
     try {
         const response = await userStore.axiosAuthInterceptors().post('/yomankum/api/v1/login/first', body.value)

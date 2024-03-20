@@ -1,15 +1,15 @@
 <template>
     <div class="flex flex-col">
         <div class="basis-[100px] flex justify-center items-center">
-            <div class="logo">
+            <router-link :to="'/'" class="logo" @click="clickSideMenu(mainMenu[0])">
                 요만큼
-            </div>
+            </router-link>
         </div>
         <div>
             <router-link :to="menu.path" v-for="menu in mainMenu"
                 class="flex h-[60px]  justify-start items-center pl-8 text-[#86878F]"
                 :class="{ 'border-blue-700 font-bold border-l-[5px]': menu.selected }" @click="clickSideMenu(menu)"> {{
-                    menu.name }} </router-link>
+                menu.name }} </router-link>
         </div>
     </div>
 </template>
