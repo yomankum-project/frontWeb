@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', () => {
         checkLogin: 'logout',
     })
 
-    const auth = ref({ accessToken: '' })
+    const auth = ref({ accessToken: '', id: '' })
 
     const userdata = ref([])
 
@@ -22,7 +22,8 @@ export const useUserStore = defineStore('user', () => {
 
         api.interceptors.request.use(
             config => {
-                config.headers.Authorization = `Bearer ${auth.value.accessToken}`
+                // config.headers.Authorization = `Bearer ${auth.value.accessToken}`
+                config.headers.Authorization = `${auth.value.accessToken}`
                 return config
             },
             error => {
@@ -59,14 +60,10 @@ export const useUserStore = defineStore('user', () => {
 
         return api
     }
-
     return { info, auth, userdata, axiosAuthInterceptors }
-},
-    {
-        persist: {
-            key: 'user-key',
-            storage: sessionStorage, //  탭이 닫힐 때 사라짐, 로그아웃시 스토리지에서 삭제해줘야 함
-        },
+}, {
+    persist: {
+        key: 'auth',
+        storage: sessionStorage, //  탭이 닫힐 때 사라짐, 로그아웃시 스토리지에서 삭제해줘야 함
     },
-
-)
+},)
