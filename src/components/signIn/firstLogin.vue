@@ -164,7 +164,7 @@ const saveRequest = async () => {
     }
 
     try {
-        const response = await userStore.axiosAuthInterceptors().post('/yomankum/api/v1/login/first', body.value)
+        const response = await userStore.axiosAuthInterceptors().post('/api/v1/login/first', body.value)
         console.log(response)
     } catch (error) {
         console.log(error)
