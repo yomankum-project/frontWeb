@@ -169,7 +169,7 @@ const signIn = (async () => {
         userInfo.email = values.email
         userInfo.password = values.password
 
-        const response = await $axios.post('/yomankum/api/v1/login', userInfo)
+        const response = await $axios.post('/api/v1/login', userInfo)
         // console.log(response.data.nickname)
 
         // save accessToken to pinia store

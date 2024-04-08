@@ -18,11 +18,11 @@ export default ({ mode }) => {
     },
     server: {
       proxy: {
-        '/yomankum': {
+        '/api': {
           target: process.env.VITE_ENDPOINT,
           changeOrigin: true,
           secure: true,
-          // rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path.replace(/^\/api/, '/yomankum/api'),
           // agent: new https.Agent(),
           // ws: true
         }
