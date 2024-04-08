@@ -22,7 +22,7 @@
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md h-full w-full px-4" />
                         </div>
                         <small class="text-red-600" id="email-error">{{ errors.email ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
 
                     <!-- 이메일 인증 확인 -->
@@ -37,15 +37,15 @@
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md h-full w-[50%] px-4" />
                             <Button v-if="emailButton != '인증 완료'" class="h-full w-[50%] justify-center bg-[#1e4ae9]"
                                 @click="emailCertification"> {{
-                                    emailButton }}
+                                emailButton }}
                             </Button>
                             <Button v-else disabled class="h-full w-[50%] justify-center bg-[#1e4ae9]"
                                 @click="emailCertification"> {{
-                                    emailButton }}
+                                emailButton }}
                             </Button>
                         </div>
                         <small class="text-red-600 " id="email-cert-error">{{ errors.email_cert ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
 
 
@@ -62,7 +62,7 @@
                             </form>
                         </div>
                         <small class="text-red-600" id="password-error">{{ errors.password ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
 
                     <!-- 비밀번호 확인 -->
@@ -79,7 +79,7 @@
                             </form>
                         </div>
                         <small class="text-red-600" id="password-repeat-error">{{ errors.password_repeat ||
-                            '&nbsp;' }}</small>
+                                '&nbsp;' }}</small>
                     </div>
                 </div>
 
@@ -119,7 +119,8 @@
                                     <Checkbox v-model="val.checked" :binary="true" class="mr-2" />
                                     {{ key }}
                                 </div>
-                                <div class="text-gray-500 underline cursor-pointer" @click="val.showMore = !val.showMore">
+                                <div class="text-gray-500 underline cursor-pointer"
+                                    @click="val.showMore = !val.showMore">
                                     보기
                                 </div>
                             </div>
@@ -223,7 +224,7 @@ const emailCertification = async () => {
 
 const checkEmailCert = async (code) => {
     try {
-        const response = await $axios.post('/yomankum/api/v1/email/code/check', {
+        const response = await $axios.post('/api/v1/email/code/check', {
             email: values.email,
             code: code
         })
@@ -254,7 +255,7 @@ const sendEmailCert = async () => {
 
 const sendEmail = async () => {
     try {
-        const response = await $axios.post('/yomankum/api/v1/email', {
+        const response = await $axios.post('/api/v1/email', {
             email: values.email,
             mailType: "JOIN"
         })
@@ -394,7 +395,7 @@ const signUpRequest = async () => {
 const signUp = async () => {
     try {
         console.log(values.email, values.password)
-        const response = await $axios.post('/yomankum/api/v1/sign-up', {
+        const response = await $axios.post('/api/v1/sign-up', {
             email: values.email,
             password: values.password
         })
