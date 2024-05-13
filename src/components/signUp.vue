@@ -224,10 +224,7 @@ const emailCertification = async () => {
 
 const checkEmailCert = async (code) => {
     try {
-        const response = await $axios.post('/api/v1/email/code/check', {
-            email: values.email,
-            code: code
-        })
+        const response = await $axios.get(`/api/v1/sign-up/check/code/${values.email}/${code}`)
         console.log(response)
         return null;
     } catch (error) {
@@ -255,10 +252,7 @@ const sendEmailCert = async () => {
 
 const sendEmail = async () => {
     try {
-        const response = await $axios.post('/api/v1/email', {
-            email: values.email,
-            mailType: "JOIN"
-        })
+        const response = await $axios.post(`/api/v1/sign-up/send/mail/${values.email}`, {})
         console.log(response)
         return false;
     } catch (error) {
