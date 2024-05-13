@@ -154,7 +154,6 @@ const saveRequest = async () => {
         "nickname": values.nickname,
         "gender": '',
         "birthDate": values.birth,
-        "id": auth.value.id,
     })
 
     if (gender.value.gender == '남자') {
@@ -164,7 +163,7 @@ const saveRequest = async () => {
     }
 
     try {
-        const response = await userStore.axiosAuthInterceptors().post('/api/v1/login/first', body.value)
+        const response = await userStore.axiosAuthInterceptors().put('/api/v1/user/info', body.value)
         console.log(response)
     } catch (error) {
         console.log(error)
