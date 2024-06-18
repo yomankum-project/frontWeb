@@ -113,6 +113,9 @@ import axios from 'axios'
 
 // import Lara from '@/presets/lara';
 
+// SDK를 초기화 합니다. 사용할 앱의 JavaScript 키를 설정해야 합니다.
+window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY);
+
 const app = createApp(App)
 
 axios.defaults.baseURL = import.meta.env.VITE_ENDPOINT;

@@ -15,8 +15,8 @@
                     </div>
                 </div>
                 <div v-for="week in calendar" class="flex flex-1 items-center w-full ">
-                    <div v-for="i in 7" class="flex flex-col p-2 w-[14.285714285%] h-full border justify-between">
-                        <!-- {{ week }} -->
+                    <div v-for="i in Array(7).keys()" :key="i"
+                        class="flex flex-col p-2 w-[14.285714285%] h-full border justify-between">
                         <div>
                             {{ week[i] }}
                         </div>
@@ -43,7 +43,7 @@
                 <i class="pi pi-times p-mr-2 border-none text-[24px] text-gray-400" />
             </div>
             <div class="flex flex-col flex-1 border-2 mt-5 rounded overflow-y-auto">
-                <div v-for="card in  detailCards " class="p-3 rounded shadow-xl shadow-gray-200/50 m-3">
+                <div v-for="card in detailCards " class="p-3 rounded shadow-xl shadow-gray-200/50 m-3">
                     <div class="border-b-2 text-[20px] font-medium p-5" :class="checkLevel(card.level)">
                         <i class="pi pi-check-circle mr-2" />
                         {{ card.title }}
@@ -128,7 +128,7 @@ const createCalendar = () => {
         week.push('')
     }
     output.push(week)
-    // console.log(output)
+    console.log(output)
     return output
 }
 

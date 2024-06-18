@@ -5,11 +5,11 @@
                 요만큼
             </router-link>
         </div>
-        <div>
-            <router-link :to="menu.path" v-for="menu in mainMenu"
+        <div v-for="menu in mainMenu">
+            <router-link :to="menu.path" v-if="menu.role == undefined || menu.role == checkRole()"
                 class="flex h-[60px]  justify-start items-center pl-8 text-[#86878F]"
                 :class="{ 'border-blue-700 font-bold border-l-[5px]': menu.selected }" @click="clickSideMenu(menu)"> {{
-                menu.name }} </router-link>
+                    menu.name }} </router-link>
         </div>
     </div>
 </template>
@@ -17,12 +17,23 @@
 <script setup>
 
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/user'
+
+const user = useUserStore();
+const { auth } = storeToRefs(user);
+
+const checkRole = () => {
+    if (auth == undefined) return ''
+    return user.returnRole(auth.value.accessToken)
+}
 
 const mainMenu = ref([
     { name: '가계부', path: '/', selected: true },
     { name: '나의 지출입 달력', path: '/calendar', selected: false },
     { name: '나의 소비 분석', path: '/statistic', selected: false },
     { name: '마이페이지', path: '/profile', selected: false },
+    { name: '관리자페이지', path: '/admin', selected: false, role: 'ADMIN' },
 ])
 
 const clickSideMenu = (menu) => {

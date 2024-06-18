@@ -9,6 +9,8 @@ import Account from '@/views/private/AccountView.vue'
 import Statistic from '@/views/private/StatisticView.vue'
 import Settings from '@/views/private/SettingView.vue'
 import SignOut from '@/views/private/SignOut.vue'
+import Admin from '@/views/admin/AdminView.vue'
+import OAuthHandle from '../views/private/OAuthHandle.vue'
 
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/stores/user'
@@ -74,11 +76,16 @@ const router = createRouter({
       name: 'signout',
       component: SignOut
     },
-    // {
-    //   path: '/users',
-    //   name: 'users',
-    //   component: () => import('../views/private/UsersView.vue')
-    // },
+    {
+      path: '/oauth2/redirect',
+      name: 'OAuthHandle',
+      component: OAuthHandle
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: Admin
+    },
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
@@ -121,21 +128,18 @@ const userPath = [
   {
     path: '/settings'
   },
-  {
-    path: '/users'
-  },
 ]
 
 const adminPath = [
   {
-    path: '/users'
+    path: '/admin'
   },
 ]
 
 router.beforeEach(async (to) => {
 
   const user = useUserStore();
-  const { info, userdata } = storeToRefs(user);
+  const { info, auth } = storeToRefs(user);
 
   if (info.value.checkLogin == 'login') {
 
@@ -144,7 +148,7 @@ router.beforeEach(async (to) => {
     // for admin route, if user is not admin, redirect to dashboard page
     for (const route of adminPath) {
       if (route.path == to.path) {
-        const canAccess = await canAdminAccess(userdata)
+        const canAccess = await canAdminAccess(info, user, auth)
         if (!canAccess) return '/dashboard'
       }
     }
@@ -177,8 +181,8 @@ router.beforeEach(async (to) => {
   }
 })
 
-const canAdminAccess = (async (userdata) => {
-  if (userdata.value.role == 'admin') {
+const canAdminAccess = (async (info, user, auth) => {
+  if (user.returnRole(auth.value.accessToken) == 'ADMIN' || info.value.checkLogin == 'login') {
     return true
   } else {
     return false

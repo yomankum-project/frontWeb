@@ -15,8 +15,6 @@ export const useUserStore = defineStore('user', () => {
 
     const auth = ref({ accessToken: '', id: '' })
 
-    const userdata = ref([])
-
     function axiosAuthInterceptors() {
         const api = $axios.create();
 
@@ -60,7 +58,21 @@ export const useUserStore = defineStore('user', () => {
 
         return api
     }
-    return { info, auth, userdata, axiosAuthInterceptors }
+    function setUserInfo(accessToken) {
+        // let decodedPayload
+        // if (accessToken != null && accessToken != '') {
+        //     // decode accessToken
+        //     const [header, payload, signature] = accessToken.split('.');
+        //     decodedPayload = JSON.parse(atob(payload)); // Base64 디코딩
+        // }
+        info.value.checkLogin = 'login'
+    }
+    function returnRole(accessToken) {
+        const [header, payload, signature] = accessToken.split('.');
+        const decodedPayload = JSON.parse(atob(payload)); // Base64 디코딩
+        return decodedPayload.role
+    }
+    return { info, auth, axiosAuthInterceptors, setUserInfo, returnRole }
 }, {
     persist: {
         key: 'auth',

@@ -20,7 +20,7 @@
                                 class="border-2 border-[#D4D7E3] bg-[#F7FBFF] rounded-md w-full h-[50px] px-4" />
                         </div>
                         <small class="text-red-600" id="email-error">{{ errors.email ||
-                                '&nbsp;' }}</small>
+                            '&nbsp;' }}</small>
                     </div>
                     <div class="flex flex-col mb-6 w-full h-[76px]">
                         <div class="flex justify-start items-center">
@@ -35,7 +35,7 @@
                             </form>
                         </div>
                         <small class="text-red-600" id="password-error">{{ errors.password ||
-                                '&nbsp;' }}</small>
+                            '&nbsp;' }}</small>
                     </div>
                     <div class="flex justify-between ">
                         <div class="flex">
@@ -57,7 +57,7 @@
                 <div class="flex justify-between my-6">
                     <button
                         class="bg-[url('@/assets/Google.png')] w-[30%] h-[50px] bg-no-repeat bg-center bg-cover rounded-lg border-2"></button>
-                    <button
+                    <button @click="kakaoLogin()"
                         class="bg-[url('@/assets/Kakao.png')] w-[30%] h-[50px] bg-no-repeat bg-center bg-cover rounded-lg border-2"></button>
                     <button
                         class="bg-[url('@/assets/Naver.png')] w-[30%] h-[50px] bg-no-repeat bg-center bg-cover rounded-lg border-2"></button>
@@ -194,6 +194,9 @@ const signIn = (async () => {
             console.log('go to main page')
             // 로그인이 성공했다면, pinia store에 사용자 로그인 상태 저장
             info.value.checkLogin = 'login'
+
+            // accessToken decode 후 사용자 정보 저장
+            userStore.setUserInfo(response.data.accessToken)
             router.push({ name: 'dashboard' });
             return
         }
@@ -203,5 +206,16 @@ const signIn = (async () => {
         return
     }
 })
+
+const kakao_redirect_uri = import.meta.env.VITE_FRONTEND_URL + "/oauth2/redirect";
+
+// 1. 인가 코드 얻기
+// https://developers.kakao.com/docs/latest/ko/kakaologin/js#login
+const kakaoLogin = () => {
+    window.Kakao.Auth.authorize({
+        redirectUri: kakao_redirect_uri,
+        scope: 'profile_nickname',
+    });
+}
 
 </script>
